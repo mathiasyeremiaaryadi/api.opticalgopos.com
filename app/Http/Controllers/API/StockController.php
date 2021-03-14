@@ -54,7 +54,7 @@ class StockController extends Controller
      */
     public function store(Request $request)
     {
-		$stock_requests = $this->generateCode(new Stock(), $request);
+		$stock_requests = $this->generate_code(new Stock(), $request);
         
 		try {
             Stock::create($stock_requests);
@@ -72,7 +72,7 @@ class StockController extends Controller
      */
     public function show($id)
     {
-        $stock = Stock::with(['brand'])->find($id);
+        $stock = Stock::with(['brand.product', 'category'])->find($id);
 
         if($stock) {
             return response()->json([
@@ -116,7 +116,7 @@ class StockController extends Controller
         $stock = Stock::find($id);
 
         try {
-            $stock->update($request->all());
+            $stock->update($request->only(['code', 'type', 'color', 'quantity', 'brands_id', 'categories_id']));
             return response()->json(['status' => 'success']);
         } catch(QueryException $e) {
             return response()->json(['status' => 'failed']);
@@ -150,7 +150,7 @@ class StockController extends Controller
 
         $last_increment_digits = ($recent_stock_code) ? substr($recent_stock_code->code, -4) : 0;
 		
-        $stock_requests = $stock_requests->all();
+        $stock_requests = $stock_requests->only(['type', 'color', 'quantity', 'brands_id', 'categories_id']);
 
 		$stock_requests['code'] = 'STK' . str_pad($last_increment_digits + 1, 4, 0, STR_PAD_LEFT);
 

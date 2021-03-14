@@ -26,7 +26,7 @@ class PaymentController extends Controller
         $payments = Payment::orderBy('created_at', 'DESC');
 		
 		if(request()->keyword != '') {
-			$payments = $payments->where('payment_name', 'LIKE', '%' . request()->keyword . '%');
+			$payments = $payments->where('name', 'LIKE', '%' . request()->keyword . '%');
 		}
 
         if($payments) {
@@ -45,10 +45,8 @@ class PaymentController extends Controller
     public function store(Request $request)
     {
         try {
-            Payment::create($request->all());
-
+            Payment::create($request->only('name'));
             return response()->json(['status' => 'success']);
-
         } catch(QueryException $e) {
             return response()->json(['status' => 'failed']);
         }
@@ -106,10 +104,8 @@ class PaymentController extends Controller
         $payment = Payment::find($id);
 
         try {
-            $payment->update($request->all());
-
+            $payment->update($request->only('name'));
             return response()->json(['status' => 'success']);
-            
         } catch(QueryException $e) {
             return response()->json(['status' => 'failed']);
         }

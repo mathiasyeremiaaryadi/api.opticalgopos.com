@@ -28,7 +28,7 @@ class BrandController extends Controller
     {        
         if(request()->keyword != '') {
 			$brands = Brand::with('product')->whereHas('product', function($query) {
-                            $query->where('product_name', 'LIKE', '%' . request()->keyword . '%');
+                            $query->where('name', 'LIKE', '%' . request()->keyword . '%');
                         })
                         ->orWhere('name', 'LIKE', '%' . request()->keyword . '%')
                         ->orderBy('created_at', 'DESC')
@@ -55,7 +55,7 @@ class BrandController extends Controller
     public function store(Request $request)
     {
         try {
-            Brand::create($request->all());
+            Brand::create($request->only(['name', 'products_id']));
             return response()->json(['status' => 'success']);
         } catch(QueryException $e) {
             return response()->json(['status' => 'failed']);
@@ -114,7 +114,7 @@ class BrandController extends Controller
         $brand = Brand::find($id);
 
         try {
-            $brand->update($request->all());
+            $brand->update($request->only(['name', 'products_id']));
             return response()->json(['status' => 'success']);
         } catch(QueryException $e) {
             return response()->json(['status' => 'failed']);
@@ -131,11 +131,11 @@ class BrandController extends Controller
     {
         $brand = Brand::find($id);
 
-        if($brand->stocks()->count()) {
-            return response()->json(['status' => 'restricted']);
-        }
-
         if($brand) {
+            if($brand->stocks()->count()) {
+                return response()->json(['status' => 'restricted']);
+            }
+
             try {
                 $brand->delete();
                 return response()->json(['status' => 'success']);

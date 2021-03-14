@@ -113,7 +113,7 @@ class EmployeeController extends Controller
         $employee = Employee::find($id);
 		
 		try {			
-			$employee->update($request->all());
+			$employee->update($request->only(['code', 'name', 'address', 'date_of_birth', 'email']));
 
             return response()->json(['status' => 'success']);
 
@@ -172,11 +172,11 @@ class EmployeeController extends Controller
 		
 		$last_increment_digits = ($recent_employee_code) ? substr($recent_employee_code->code, -4) : 0;
 
-        $employee_requests = $employee_requests->all();
+        $employee_requests = $employee_requests->only(['name', 'phone', 'address', 'date_of_birth', 'email']);
 		
 		$employee_requests['code'] = 'KRY' . str_pad($last_increment_digits + 1, 4, 0, STR_PAD_LEFT);
 		
-		$employee_requests['password'] = bcrypt('Opticalgo@admPOS0221EMP');
+		$employee_requests['password'] = bcrypt('Opticalgo@POSeMP0221');
 
         return $employee_requests;
     }

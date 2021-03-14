@@ -20,12 +20,12 @@ class Customer extends Model
     ];
 
     // Relations
-    public function prescriptions() {
+    public function prescription() {
         return $this->hasMany(Prescription::class, 'customers_id');
     }
 
     public function transactions() {
-        return $this->hasMany(Transaction::class, 'transactions_id');
+        return $this->hasMany(Transaction::class, 'customers_id');
     }
 
     // Mutators

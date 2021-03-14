@@ -24,7 +24,7 @@ class Category extends Model
     }
 
     public function transactions() {
-        return $this->hasMany(Transaction::class, 'transactions_id');
+        return $this->hasMany(Transaction::class, 'categories_id');
     }
 
     // Mutators

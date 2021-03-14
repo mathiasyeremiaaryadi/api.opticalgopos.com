@@ -107,7 +107,7 @@ class ProductController extends Controller
         $product = Product::find($id);
 
         try {
-            $product->update($request->all());
+            $product->update($request->only(['code', 'name']));
             return response()->json(['status' => 'success']);
         } catch(QueryException $e) {
             return response()->json(['status' => 'failed']);
@@ -147,7 +147,7 @@ class ProductController extends Controller
 		
 		$last_increment_digits = ($recent_product_code) ? substr($recent_product_code->code, -4) : 0;
 
-        $product_requests = $product_requests->all();
+        $product_requests = $product_requests->only('name');
 		
 		$product_requests['code'] = 'PRD' . str_pad($last_increment_digits + 1, 4, 0, STR_PAD_LEFT);
 

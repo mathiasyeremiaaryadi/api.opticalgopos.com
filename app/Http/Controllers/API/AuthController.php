@@ -24,7 +24,6 @@ class AuthController extends Controller
             return response()->json([
                 'status' => 'success',
                 'token' => $token,
-				'role' => 1
             ]);
         }
 	
@@ -34,12 +33,22 @@ class AuthController extends Controller
             return response()->json([
                 'status' => 'success',
                 'token' => $token,
-                'role' => 2
-            ]);
+           ]);
         }
 
         return response()->json([
             'status' => 'not match',
+        ]);
+    }
+
+    public function show() {
+        $user = request()->user();
+
+        $user['role'] = $user->code ? 1 : 0;
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $user
         ]);
     }
 }

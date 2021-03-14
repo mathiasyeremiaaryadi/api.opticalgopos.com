@@ -28,9 +28,7 @@ class CustomerController extends Controller
 		if(request()->keyword != '') {
 			$customers = $customers->where('code', 'LIKE', '%' . request()->keyword . '%')
                                 ->orWhere('name', 'LIKE', '%' . request()->keyword . '%')
-                                ->orWhere('phone', 'LIKE', '%' . request()->keyword . '%')
-                                ->orWhere('email', 'LIKE', '%' . request()->keyword . '%')
-                                ->orWhere('address', 'LIKE', '%' . request()->keyword . '%');
+                                ->orWhere('phone', 'LIKE', '%' . request()->keyword . '%');
 		}
 
         if($customers) {
@@ -38,15 +36,6 @@ class CustomerController extends Controller
         }
 
         return response()->json(['status' => 'not found']);
-    }
-
-    public function store_prescription(Request $request) {
-        try {
-            Prescription::store($request->all());
-            return response()->json(['status' => 'success']);
-        } catch(QueryException $e) {
-            return response()->json(['status' => 'failed']);
-        }
     }
 
     /**
@@ -77,12 +66,12 @@ class CustomerController extends Controller
      */
     public function edit($id)
     {
-        $customer_with_prescription = Prescription::with('customer')->where('customers_id', $id)->first();
+        $customer = Customer::find($id);
 
-        if($customer_with_prescription) {
+        if($customer) {
             return response()->json([
                 'status' => 'success', 
-                'data' => $customer_with_prescription
+                'data' => $customer
             ]);
         }
 
@@ -100,19 +89,8 @@ class CustomerController extends Controller
     {
         $customer = Customer::find($id);
 
-        $customer_requests = $request->except('prescription');
-
         try {
-            $customer->update($customer_requests);
-
-            $prescription_requests = $request->prescription;
-
-            $prescription_requests['customers_id'] = $customer->id;
-
-            $prescription = Prescription::find($prescription_requests['id']);
-
-            $prescription->update($prescription_requests);
-            
+            $customer->update($request->only(['name', 'phone', 'email', 'address']));            
             return response()->json(['status' => 'success']);
         } catch(QueryException $e) {
             return response()->json(['status' => 'failed']);
@@ -139,6 +117,47 @@ class CustomerController extends Controller
             try {
                 $prescription->delete();
                 $customer->delete();
+                return response()->json(['status' => 'success']);
+            } catch(QueryException $e) {
+                return response()->json(['status' => 'failed']);
+            }
+        }
+
+        return response()->json(['status' => 'not found']);
+    }
+
+    public function show_prescription($id) {
+        $customer = Customer::find($id);
+        $prescriptions = Prescription::where('customers_id', $id)->get();
+        
+        if($customer && $prescriptions) {
+            return response()->json([
+                'status' => 'success', 
+                'data' => [
+                    'customer' => $customer,
+                    'prescriptions' => $prescriptions
+                ]
+            ]);
+        }
+
+        return response()->json(['status' => 'not found']);
+    }
+
+    public function store_prescription(Request $request, $id) {
+        try {
+            Prescription::create($request->only(['right_spherical', 'right_cylinder', 'right_plus', 'right_axis', 'right_pupil_distance', 'left_spherical', 'left_cylinder','left_plus', 'left_axis', 'left_pupil_distance', 'customers_id']));
+            return response()->json(['status' => 'success']);
+        } catch(QueryException $e) {
+            return response()->json(['status' => 'failed']);
+        }
+    }
+
+    public function destroy_prescription($id) {
+        $prescription = Prescription::find($id);
+
+        if($prescription) {
+            try {
+                $prescription->delete();
                 return response()->json(['status' => 'success']);
             } catch(QueryException $e) {
                 return response()->json(['status' => 'failed']);

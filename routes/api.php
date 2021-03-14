@@ -18,6 +18,9 @@ use Illuminate\Support\Facades\Route;
 Route::post('login', 'API\AuthController@login')->name('login');
 
 Route::middleware('auth:sanctum')->group(function () {
+    // Authenticated 
+    Route::get('auth-user', 'API\AuthController@show')->name('show');
+
     // Products REST-API resource access
     Route::resource('products', API\ProductController::class);
 
@@ -42,10 +45,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Customers REST-API resource access
     Route::resource('customers', API\CustomerController::class);
-    Route::post('customers/prescription', 'API\CustomerController@store_prescription');
+    Route::get('customers/prescription/{customer}', 'API\CustomerController@show_prescription')->name('customers.prescription.show');
+    Route::post('customers/prescription/{customer}', 'API\CustomerController@store_prescription')->name('customers.prescription.store');
+    Route::delete('customers/prescription/{prescription}', 'API\CustomerController@destroy_prescription')->name('customers.prescription.destroy');
 
     // Admins REST-API resource access
-    Route::resource('admins', API\OwnerController::class);
+    Route::resource('admins', API\AdminController::class);
 });
 
 

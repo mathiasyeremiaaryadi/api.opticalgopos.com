@@ -29,7 +29,7 @@ class TransactionController extends Controller
 							->orWhere('code', 'LIKE', '%' . request()->keyword . '%')
 							->orWhere('lens_type', 'LIKE', '%' . request()->keyword . '%')
 							->orWhere('total', 'LIKE', '%' . request()->keyword . '%')
-							->orWhere('status', 'LIKE', '%' . request()->keyword . '%');
+							->orWhere('status', request()->keyword);
 		} else {
 			$transactions = Transaction::with('payment');
 		}
@@ -49,7 +49,7 @@ class TransactionController extends Controller
      */
     public function store(Request $request)
     {   
-        $customer_requests = $this->generate_customer_code(new Customer(), $request);
+        $customer_requests = $this->generate_customer_code(new Customer(), $request->only(['customer.name', 'customer.phone']));
 
 		try {
             $created_customer = Customer::create($customer_requests);
@@ -74,7 +74,7 @@ class TransactionController extends Controller
      */
     public function show($id)
     {
-        $transaction = Transaction::with(['payment', 'customer', 'category'])->first();
+        $transaction = Transaction::with(['payment', 'customer', 'category'])->find($id);
 
         if($transaction) {
             return response()->json([
@@ -94,7 +94,7 @@ class TransactionController extends Controller
      */
     public function edit($id)
     {
-        $transaction = Transaction::with('category')->find($id);
+        $transaction = Transaction::with('customer')->find($id);
 
         if($transaction) {
             return response()->json([
@@ -118,7 +118,7 @@ class TransactionController extends Controller
         $transaction = Transaction::find($id);
 
         try {
-            $transaction->update($request->all());
+            $transaction->update($request->only(['code', 'lens_type', 'total', 'status', 'payments_id', 'categories_id', 'customers_id']));
             return response()->json(['status' => 'success']);
         } catch(QueryException $e) {
             return response()->json(['status' => 'failed']);
@@ -152,7 +152,7 @@ class TransactionController extends Controller
 
 		$last_increment_digits = $recent_customer_code ? substr($recent_customer_code->code, -4) : 0;
 		
-        $customer_requests = $customer_requests->customer;
+        $customer_requests = $customer_requests['customer'];
 		
 		$customer_requests['code'] = 'PLG' . str_pad($last_increment_digits + 1, 4, 0, STR_PAD_LEFT);
 
@@ -164,7 +164,7 @@ class TransactionController extends Controller
 
 		$last_increment_digits = ($recent_transaction_code) ? substr($recent_transaction_code->code, -4) : 0;
 
-        $transaction_requests = $transaction_requests->except('customer');
+        $transaction_requests = $transaction_requests->only(['lens_type', 'total', 'status', 'payments_id', 'categories_id', 'customers_id']);
 				
 		$transaction_requests['code'] = 'TRX' . str_pad($last_increment_digits + 1, 4, 0, STR_PAD_LEFT);
 

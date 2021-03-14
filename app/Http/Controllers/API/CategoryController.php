@@ -109,7 +109,7 @@ class CategoryController extends Controller
         $category = Category::find($id);
 
         try {
-            $category->update($request->all());
+            $category->update($request->only(['code', 'name', 'description', 'price']));
             return response()->json(['status' => 'success']);
         } catch(QueryException $e) {
             return response()->json(['status' => 'failed']);
@@ -147,7 +147,7 @@ class CategoryController extends Controller
 	
 		$last_increment_digits = $recent_category_code ? substr($recent_category_code->code, -4) : 0;
 		
-		$category_requests = $category_requests->all();
+		$category_requests = $category_requests->only(['name', 'description', 'price']);
 
 		$category_requests['code'] = 'KTG' . str_pad($last_increment_digits + 1, 4, 0, STR_PAD_LEFT);
 

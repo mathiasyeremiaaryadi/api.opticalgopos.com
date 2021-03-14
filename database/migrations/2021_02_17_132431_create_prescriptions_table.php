@@ -15,16 +15,16 @@ class CreatePrescriptionsTable extends Migration
     {
         Schema::create('prescriptions', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->float('right_spherical');
-            $table->float('right_cylinder');
-            $table->float('right_plus');
-            $table->float('right_axis');
-            $table->float('right_pupil_distance');
-            $table->float('left_spherical');
-            $table->float('left_cylinder');
-            $table->float('left_plus');
-            $table->float('left_axis');
-            $table->float('left_pupil_distance');
+            $table->float('right_spherical')->nullable();
+            $table->float('right_cylinder')->nullable();
+            $table->float('right_plus')->nullable();
+            $table->float('right_axis')->nullable();
+            $table->float('right_pupil_distance')->nullable();
+            $table->float('left_spherical')->nullable();
+            $table->float('left_cylinder')->nullable();
+            $table->float('left_plus')->nullable();
+            $table->float('left_axis')->nullable();
+            $table->float('left_pupil_distance')->nullable();
 
             $table->foreignId('customers_id')->constrained('customers');
 

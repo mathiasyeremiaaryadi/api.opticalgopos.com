@@ -39,8 +39,28 @@ class Transaction extends Model
         $this->attributes['lens_type'] = strtolower($value);
     }
 
+    public function setStatusAttribute($value) {
+        if($value == 'Gagal') {
+            $this->attributes['status'] = 0;
+        } else if($value == 'Sukses') {
+            $this->attributes['status'] = 1;
+        } else {
+            $this->attributes['status'] = 2;
+        }
+    }
+
     // Accessors
     public function getLensTypeAttribute($value) {
         return ucwords($value);
+    }
+
+    public function getStatusAttribute($value) {
+        if($value == 0) {
+            return ucwords('gagal');
+        } else if($value == 1) {
+            return ucwords('sukses');
+        } else {
+            return ucwords('pending');
+        }
     }
 }
