@@ -21,6 +21,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // Authenticated 
     Route::get('auth-user', 'API\AuthController@show')->name('show');
 
+    // Dashboard REST-API resource access
+    Route::get('dashboards', 'API\DashboardController@index')->name('dashboards.index');
+
     // Products REST-API resource access
     Route::resource('products', API\ProductController::class);
 

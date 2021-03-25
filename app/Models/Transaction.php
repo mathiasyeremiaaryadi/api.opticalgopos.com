@@ -11,6 +11,7 @@ class Transaction extends Model
         'lens_type',
         'total', 
         'status',
+        'transaction_date',
         'payments_id',
         'categories_id',
         'customers_id'

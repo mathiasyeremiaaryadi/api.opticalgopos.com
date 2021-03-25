@@ -119,7 +119,7 @@ class TransactionController extends Controller
         $transaction = Transaction::find($id);
 
         try {
-            $transaction->update($request->only(['code', 'lens_type', 'total', 'status', 'payments_id', 'categories_id', 'customers_id']));
+            $transaction->update($request->only(['code', 'lens_type', 'total', 'status', 'transaction_date', 'payments_id', 'categories_id', 'customers_id']));
             return response()->json(['status' => 'success']);
         } catch(QueryException $e) {
             return response()->json(['status' => 'failed']);
@@ -165,7 +165,7 @@ class TransactionController extends Controller
 
 		$last_increment_digits = ($recent_transaction_code) ? substr($recent_transaction_code->code, -4) : 0;
 
-        $transaction_requests = $transaction_requests->only(['lens_type', 'total', 'status', 'payments_id', 'categories_id', 'customers_id']);
+        $transaction_requests = $transaction_requests->only(['lens_type', 'total', 'status', 'transaction_date', 'payments_id', 'categories_id', 'customers_id']);
 				
 		$transaction_requests['code'] = 'TRX' . str_pad($last_increment_digits + 1, 4, 0, STR_PAD_LEFT);
 
